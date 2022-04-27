@@ -1,0 +1,5 @@
+FROM library/postgres
+
+ENV POSTGRES_DB admin
+ENV POSTGRES_USER postgres
+ENV POSTGRES_PASSWORD 123456

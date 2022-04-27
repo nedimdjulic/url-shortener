@@ -1,0 +1,120 @@
+definitions:
+  handlers.countRes:
+    properties:
+      count:
+        type: integer
+    type: object
+  handlers.createReq:
+    properties:
+      url:
+        type: string
+    type: object
+  handlers.createRes:
+    properties:
+      message:
+        type: string
+      shortened:
+        type: string
+    type: object
+  handlers.message:
+    properties:
+      message:
+        type: string
+    type: object
+info:
+  contact: {}
+paths:
+  /{short_url}:
+    get:
+      consumes:
+      - application/json
+      description: Redirection the to original URL, provided the shortened link
+      parameters:
+      - description: Shortened URL
+        in: path
+        name: short_url
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "303":
+          description: See Other
+          schema:
+            type: string
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.message'
+      summary: Redirects to original URL
+  /count/{short_url}:
+    get:
+      consumes:
+      - application/json
+      description: Returns the count of redirections from shortened to original URL
+      parameters:
+      - description: Shortened URL
+        in: path
+        name: short_url
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.countRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.message'
+      summary: Get redirections count
+  /create:
+    post:
+      consumes:
+      - application/json
+      description: Returns a shortened URL mapped to the original URL sent in request
+      parameters:
+      - description: Create new short URL
+        in: body
+        name: url-request
+        required: true
+        schema:
+          $ref: '#/definitions/handlers.createReq'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.createRes'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.message'
+      summary: Creates a short URL
+  /delete/{short_url}:
+    delete:
+      consumes:
+      - application/json
+      description: Removes the URL mapping of short to original
+      parameters:
+      - description: Shortened URL
+        in: path
+        name: short_url
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/handlers.message'
+        "500":
+          description: Internal Server Error
+          schema:
+            $ref: '#/definitions/handlers.message'
+      summary: Delete short link
+swagger: "2.0"
