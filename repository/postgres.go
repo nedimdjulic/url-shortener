@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"errors"
 	"log"
 
 	"github.com/nedimdjulic/url-shortener/models"
@@ -28,6 +29,16 @@ type PGRepo interface {
 
 // CreateShortURL inserts new URL into db
 func (u *UrlDB) CreateShortURL(url models.Url) error {
+	var exists bool
+
+	if err := u.client.QueryRow("SELECT EXISTS(SELECT * FROM url WHERE original = $1)", url.Original).Scan(&exists); err != nil {
+		return err
+	}
+
+	if exists {
+		return errors.New("Short URL already created for provided URL")
+	}
+
 	_, err := u.client.Exec("INSERT INTO url(shortened, original, count) VALUES($1, $2, $3)", url.Shortened, url.Original, url.Count)
 	if err != nil {
 		return err
